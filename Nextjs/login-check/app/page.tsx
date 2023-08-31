@@ -1,5 +1,11 @@
-import { redirect } from 'next/navigation';
+'use client'
+
 
 export default function Home() {
-  redirect('/login');
+
+  return (
+    <main>
+      <p>Your Page!</p>
+    </main>
+  )
 }

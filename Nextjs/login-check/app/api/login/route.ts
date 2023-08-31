@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 export async function POST(request: NextRequest) {
   // 別途Contextを作成し、そこに突っ込む。
   // CookieにSessionIDを入れる?
-  // やりたいこと: headerにuuidで作ったsessionIDを突っ込んで返す
   const { id, pw } = await request.json();
 
   // DB接続情報
@@ -33,7 +32,9 @@ export async function POST(request: NextRequest) {
 
     // パスワード照合
     if (rows[0].password !== hash_pw) {
-      return NextResponse.json({ msg: "IDかPWが違うヨ" })
+      return new NextResponse(JSON.stringify({ msg: "IDかPWが違うヨ" }), {
+        status: 401,
+      })
     }
 
     return new NextResponse(JSON.stringify({ msg: "Nice!" }), {
