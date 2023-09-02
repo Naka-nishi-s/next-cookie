@@ -1,10 +1,16 @@
 'use client'
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export default function login() {
 
-  const { register, handleSubmit } = useForm();
+  // ルーター作成
+  const router = useRouter();
+
+  /**
+   * ログイン処理
+   */
   const onSubmit = async (data: any) => {
     const response: any = await fetch("/api/login", {
       method: "POST",
@@ -17,19 +23,16 @@ export default function login() {
     // 返ってきたレスポンスをjsonにパース
     const responseJson = await response.json();
 
+    // IDかパスワードが違った場合
     if (!response.ok) {
-      return alert(responseJson.msg);
+      return alert(responseJson.errMsg);
     }
 
-    //TODO: ここでサーバー側からSet-Cookieのヘッダが返り、見た目上はCookieがブラウザに保存されているように見える。
-    // ブラウザ保存されたCookieは、リロードやリダイレクトしても残るはず。
-    // だが、残っていない。
-    // これは、Cookieがちゃんとブラウザに保存されていない、
-    // もしくはSet-Cookieのオプション設定をしていないことが原因の可能性がある。
-    // リロードやリダイレクトでCookieが残るようになったら、"/"にリクエストを送ってmiddleware発動して終わり。
+    router.push("/user");
   }
 
-
+  // フォーム用
+  const { register, handleSubmit } = useForm();
 
   return (
     <main>
