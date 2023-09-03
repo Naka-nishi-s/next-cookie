@@ -1,13 +1,13 @@
 'use client'
 
-import { User } from "@/types/User";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
+import { UserContext } from "../context/UserContext";
 
 export default function User() {
 
-  // ユーザー情報
-  const [user, setUser] = useState<User>();
+  // 全体で管理しているユーザー情報
+  const { user, setUser } = useContext(UserContext);
 
   // ルーター
   const router = useRouter();
@@ -18,17 +18,41 @@ export default function User() {
   const getUserData = async () => {
     // user情報を取りに行く
     const response = await fetch("/api/user")
-    const { userData } = await response.json();
+    const responseJson = await response.json();
 
     if (!response.ok) {
-      alert(userData.errMsg);
-      router.push("/login")
+      alert(responseJson.errMsg);
+      return router.replace("/login")
     }
 
+    // レスポンスからuserDataを取り出す
+    const { userData } = responseJson;
+
+    // 名前とemailをセット
     setUser({ name: userData.name, email: userData.email })
   }
 
-  console.log("user", user);
+  /**
+   * ログアウト処理
+   */
+  const logout = async () => {
+    // ログアウト用のAPIを叩く
+    const response = await fetch("/api/logout",
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+    const responseJson: any = await response.json();
+
+    if (!response.ok) {
+      alert("サーバーの調子が悪いようです。\nもう一度ログインしてください。");
+      return router.push("/login");
+    }
+
+    alert(responseJson.msg);
+    return router.push("/login");
+  }
 
   // ユーザー情報の取得
   useEffect(() => {
@@ -42,6 +66,7 @@ export default function User() {
         <>
           <p>ユーザー名:{user.name}</p>
           <p>ユーザーMail:{user.email}</p>
+          <button onClick={logout}>ログアウト</button>
         </>
       )}
     </div>

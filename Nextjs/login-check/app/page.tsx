@@ -12,7 +12,11 @@ export default function Home() {
    * ログインチェック
    */
   const loginCheck = async () => {
-    const cooieResponse = await fetch("/api/login-check");
+    const cooieResponse = await fetch("/api/login-check",
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
     if (!cooieResponse.ok) {
       return router.push("/login");
